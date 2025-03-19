@@ -7,9 +7,10 @@ export enum ErrorEnum {
   _ERR_CONTRACT_3, // delete contract failed
 
 
-  _CONTRACT_NOT_FOUND
+  _CONTRACT_NOT_FOUND,
 
-
+  _INVALID_API_KEY,
+  _API_KEY_REQUIRED
   
   
 
@@ -47,6 +48,15 @@ export const ErrorCodes: Record<ErrorEnum, ErrorCode> = {
     message: 'Contract Not found',
     status: 404,
   },
+
+  [ErrorEnum._INVALID_API_KEY]: {
+    message: 'Invalid API Key',
+    status: 401,
+  },
+  [ErrorEnum._API_KEY_REQUIRED]: {
+    message: 'API Key Required',
+    status: 401,
+  }
 
 
   
