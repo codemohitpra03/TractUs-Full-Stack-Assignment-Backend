@@ -31,7 +31,7 @@ const updateContractDTO = z.object({
       contract_data: z.string().optional(),
       type: z.enum(["text", "json"]).optional(),
     })
-    .refine(data => data.contract_data || data.type, {
+    .refine(data => data.contract_data !== null || data.type, {
       message: "Either contract_data or type must be provided",
       path: ["contract_data", "type"],
     }),

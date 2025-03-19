@@ -97,9 +97,10 @@ class ContractService {
                 values.push(type);
             }
             values.push(contract_id);
-
+            console.log(fields);
+            
             const updatedContract = await pgClient.query(
-                `UPDATE contract_table SET ${fields.join(", ")}, updated_at = NOW() WHERE contract_id = $${values.length} RETURNING *`,
+                `UPDATE contract_table SET ${fields.join(", ") + (fields.length ? ',' : '')} updated_at = NOW() WHERE contract_id = $${values.length} RETURNING *`,
                 values
             );
             return updatedContract.rows[0];
@@ -179,6 +180,43 @@ class ContractService {
         } catch (error) {
             console.log(error);
             throw new HttpException(ErrorEnum._ERR_CONTRACT_ALL_0);
+        }
+    }
+
+    public async updateContractStatus(updateContractStatusPayload:{contract_id:string,status:'draft' | 'finalized' }){
+        try {
+            const {contract_id,status} = updateContractStatusPayload
+            
+            const updatedContract = await pgClient.query(
+              `UPDATE contract_table 
+               SET 
+                   status = COALESCE($1, status),
+                   updated_at = NOW()
+               WHERE contract_id = $2 
+               RETURNING *`,
+              [status, contract_id]
+            );
+      
+            if (updatedContract.rowCount === 0) {
+              return {
+                success:false,
+                message:'Contract Not Found'
+              }
+            }
+      
+            const contract = updatedContract.rows[0];
+            console.log(contract);
+            
+            return{
+                success:true,
+                contract
+            }
+        } catch (err) {
+            console.error("Update Error:", err);
+            return {
+                success:false,
+                message:"Failed to Update Contract"
+            }
         }
     }
     
